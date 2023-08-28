@@ -1,6 +1,6 @@
 /* eslint-disable */
 import axios, { AxiosRequestConfig } from 'axios';
-import { useEffect, useRef } from 'react';
+import { useEffect, useReducer, useRef } from 'react';
 
 /**
  * @description
@@ -8,13 +8,30 @@ import { useEffect, useRef } from 'react';
  * optional updated params that will be used
  * as soon as the button to send the request is clicked.
  */
-export const useStructureEndpoint = ({
+export const useStructureEndpoint = <T>({
   endpoint,
   queryParams,
 }: {
   endpoint: string;
   queryParams: { name: string; value: string }[];
 }) => {
+  type InitialApiState<T> = {
+    isLoading: boolean;
+    hasError: boolean;
+    data: T | null;
+  };
+
+  const [state, updateApiState] = useReducer(
+    (state: InitialApiState<T>, updatedState: Partial<InitialApiState<T>>) => {
+      return { ...state, ...updatedState };
+    },
+    {
+      isLoading: false,
+      hasError: false,
+      data: null,
+    }
+  );
+
   const updatedAxiosConfig = useRef<Pick<AxiosRequestConfig, 'url' | 'params'>>({
     url: undefined,
     params: undefined,
@@ -27,16 +44,23 @@ export const useStructureEndpoint = ({
     };
   }, [endpoint, queryParams]);
 
-  function sendRequest<T>(): void {
+  function sendRequest(): void {
+    updateApiState({ isLoading: true });
+
     axios<T>({
       method: 'GET',
       ...updatedAxiosConfig.current,
     })
-      .then(console.log)
-      .catch(console.error);
+      .then(({ data }) => updateApiState({ data }))
+      .catch((err: unknown) => {
+        updateApiState({ hasError: true });
+        console.error(err);
+      })
+      .finally(() => updateApiState({ isLoading: false }));
   }
 
   return {
     sendRequest,
+    ...state,
   };
 };
