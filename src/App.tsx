@@ -2,34 +2,33 @@
 import { McButton } from '@maersk-global/mds-react-wrapper';
 import { McInput } from '@maersk-global/mds-react-wrapper/components-core/mc-input';
 import { McLoadingIndicator } from '@maersk-global/mds-react-wrapper/components-core/mc-loading-indicator';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import './App.css';
 import { useQueryParams } from './hooks/useQueryParams';
+import { useResponseTime } from './hooks/useResponseTime';
 import { useStructureEndpoint } from './hooks/useStructureEndpoint';
 
 /**
+ * TODO: Code Generation -> offer an option to generate code snippets based on the current API configuration. This can help users integrate API calls into their code.
  * TODO: create tooltip context provider (based on maersk component)
  */
 function App() {
   const [urlEndpoint, setUrlEndpoint] = useState<string>('');
 
-  const { updatedQueryParams, addNewQueryParam, updateQueryParam, deleteQueryParam } =
-    useQueryParams();
+  const {
+    updatedQueryParams,
+    updatedQueryParamsStringFormat,
+    addNewQueryParam,
+    updateQueryParam,
+    deleteQueryParam,
+  } = useQueryParams();
 
   const { isLoading, data, sendRequest } = useStructureEndpoint({
     endpoint: urlEndpoint,
     queryParams: [...updatedQueryParams.values()],
   });
 
-  const updatedQueryParamsStringFormat = useMemo(() => {
-    return [...updatedQueryParams.values()]
-      .filter(({ name }) => name)
-      .reduce(
-        (acc, { name, value }, index) =>
-          (acc += `${index === 0 ? '?' : '&'}${name}=${value}`),
-        ''
-      );
-  }, [updatedQueryParams]);
+  const timeTakenForApiToComplete = useResponseTime();
 
   const updatedEndpointWithParams = urlEndpoint.concat(updatedQueryParamsStringFormat);
 
@@ -134,10 +133,12 @@ function App() {
         <McButton label='Call API' click={sendRequest} />
       </div>
 
+      <h2>Seconds taken: {timeTakenForApiToComplete}</h2>
+
       {isLoading ? (
         <McLoadingIndicator label='loading' fit='large' />
       ) : data ? (
-        JSON.stringify(data)
+        <pre>{JSON.stringify(data, null, 2)}</pre>
       ) : null}
     </>
   );

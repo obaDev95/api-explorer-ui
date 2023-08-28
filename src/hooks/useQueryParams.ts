@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { generateRandomId } from '../utils/generate-random-id';
 
 export const useQueryParams = () => {
@@ -50,8 +50,19 @@ export const useQueryParams = () => {
     });
   }
 
+  const updatedQueryParamsStringFormat = useMemo(() => {
+    return [...queryParamsMap.values()]
+      .filter(({ name }) => name)
+      .reduce(
+        (acc, { name, value }, index) =>
+          (acc += `${index === 0 ? '?' : '&'}${name}=${value}`),
+        ''
+      );
+  }, [queryParamsMap]);
+
   return {
     updatedQueryParams: queryParamsMap,
+    updatedQueryParamsStringFormat,
     addNewQueryParam,
     deleteQueryParam,
     updateQueryParam,
