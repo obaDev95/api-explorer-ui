@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
-export const useApiPerformance = () => {
+export const useResponseTime = () => {
   const [timeTaken, setTimeTaken] = useState<number>(0);
 
   useEffect(() => {
