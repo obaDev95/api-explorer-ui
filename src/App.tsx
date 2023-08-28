@@ -2,11 +2,14 @@
 import { McButton } from '@maersk-global/mds-react-wrapper';
 import { McInput } from '@maersk-global/mds-react-wrapper/components-core/mc-input';
 import { McLoadingIndicator } from '@maersk-global/mds-react-wrapper/components-core/mc-loading-indicator';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import './App.css';
 import { useQueryParams } from './hooks/useQueryParams';
 import { useStructureEndpoint } from './hooks/useStructureEndpoint';
 
+/**
+ * TODO: create tooltip context provider (based on maersk component)
+ */
 function App() {
   const [urlEndpoint, setUrlEndpoint] = useState<string>('');
 
@@ -18,8 +21,22 @@ function App() {
     queryParams: [...updatedQueryParams.values()],
   });
 
+  const updatedQueryParamsStringFormat = useMemo(() => {
+    return [...updatedQueryParams.values()]
+      .filter(({ name }) => name)
+      .reduce(
+        (acc, { name, value }, index) =>
+          (acc += `${index === 0 ? '?' : '&'}${name}=${value}`),
+        ''
+      );
+  }, [updatedQueryParams]);
+
+  const updatedEndpointWithParams = urlEndpoint.concat(updatedQueryParamsStringFormat);
+
   return (
     <>
+      <h2>{updatedEndpointWithParams}</h2>
+
       <McInput
         label='API endpoint'
         fit='large'
