@@ -1,3 +1,4 @@
+import { McButton } from '@maersk-global/mds-react-wrapper/components-core/mc-button';
 import React, { useState } from 'react';
 import { isArray, isObject } from '../utils/object';
 
@@ -31,9 +32,16 @@ function NestedObject({
           marginBottom: '1rem',
         }}
       >
-        <button onClick={() => setAccordionOpen((prevState) => !prevState)}>
-          {accordionOpen ? 'v' : '>'}
-        </button>
+        <McButton
+          label='Button'
+          hiddenlabel
+          fit='small'
+          appearance='secondary'
+          variant='outlined'
+          icon={accordionOpen ? 'chevron-down' : 'chevron-right'}
+          click={() => setAccordionOpen((prevState) => !prevState)}
+        />
+
         <div>{`${parentKey} {${Object.keys(nestedObj).length}}`}</div>
       </div>
 
@@ -72,9 +80,16 @@ function NestedArray({
           marginBottom: '1rem',
         }}
       >
-        <button onClick={() => setAccordionOpen((prevState) => !prevState)}>
-          {accordionOpen ? 'v' : '>'}
-        </button>
+        <McButton
+          label='Button'
+          hiddenlabel
+          fit='small'
+          appearance='secondary'
+          variant='outlined'
+          icon={accordionOpen ? 'chevron-down' : 'chevron-right'}
+          click={() => setAccordionOpen((prevState) => !prevState)}
+        />
+
         <div>{`${parentKey} [${arr.length}]`}</div>
       </div>
 
@@ -85,16 +100,18 @@ function NestedArray({
           marginLeft: `calc(1rem * ${iteration})`,
         }}
       >
-        {arr.map((obj, index) => {
-          return (
-            <NestedObject
-              key={`arr-obj-${obj}-${index}`}
-              parentKey={index.toString()}
-              nestedObj={obj}
-              iteration={iteration + 1}
-            />
-          );
-        })}
+        {arr.length > 0
+          ? arr.map((obj, index) => {
+              return (
+                <NestedObject
+                  key={`arr-obj-${obj}-${index}`}
+                  parentKey={index.toString()}
+                  nestedObj={obj}
+                  iteration={iteration + 1}
+                />
+              );
+            })
+          : 'empty'}
       </div>
     </React.Fragment>
   );
