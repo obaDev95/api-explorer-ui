@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { isObject } from '../utils/object';
+import React, { useState } from 'react';
+import { isArray, isObject } from '../utils/object';
 
 const primitiveTypes = ['string', 'number', 'boolean'];
 
@@ -50,6 +50,56 @@ function NestedObject({
   );
 }
 
+function NestedArray({
+  parentKey,
+  arr,
+  iteration,
+}: {
+  parentKey: string;
+  arr: Record<string, unknown>[];
+  iteration: number;
+}) {
+  const [accordionOpen, setAccordionOpen] = useState<boolean>(false);
+
+  return (
+    <React.Fragment key={`arr-${arr}`}>
+      {/* Button + label */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          marginBottom: '1rem',
+        }}
+      >
+        <button onClick={() => setAccordionOpen((prevState) => !prevState)}>
+          {accordionOpen ? 'v' : '>'}
+        </button>
+        <div>{`${parentKey} [${arr.length}]`}</div>
+      </div>
+
+      <div
+        style={{
+          height: accordionOpen ? 'auto' : 0,
+          overflow: 'hidden',
+          marginLeft: `calc(1rem * ${iteration})`,
+        }}
+      >
+        {arr.map((obj, index) => {
+          return (
+            <NestedObject
+              key={`arr-obj-${obj}-${index}`}
+              parentKey={index.toString()}
+              nestedObj={obj}
+              iteration={iteration + 1}
+            />
+          );
+        })}
+      </div>
+    </React.Fragment>
+  );
+}
+
 export default function NestedJsonViewer({
   obj,
   iteration = 1,
@@ -78,6 +128,12 @@ export default function NestedJsonViewer({
             iteration={iteration}
             parentKey={objectKey}
             nestedObj={value as Record<string, unknown>}
+          />
+        ) : isArray(value) && isObject((value as unknown[])[0]) ? (
+          <NestedArray
+            iteration={iteration}
+            parentKey={objectKey}
+            arr={value as Record<string, unknown>[]}
           />
         ) : null}
       </div>
