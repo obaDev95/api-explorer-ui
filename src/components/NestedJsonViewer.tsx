@@ -37,7 +37,7 @@ function NestedObject({
           hiddenlabel
           fit='small'
           appearance='secondary'
-          variant='outlined'
+          variant='plain'
           icon={accordionOpen ? 'chevron-down' : 'chevron-right'}
           click={() => setAccordionOpen((prevState) => !prevState)}
         />
@@ -85,7 +85,7 @@ function NestedArray({
           hiddenlabel
           fit='small'
           appearance='secondary'
-          variant='outlined'
+          variant='plain'
           icon={accordionOpen ? 'chevron-down' : 'chevron-right'}
           click={() => setAccordionOpen((prevState) => !prevState)}
         />

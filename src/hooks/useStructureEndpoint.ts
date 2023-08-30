@@ -2,6 +2,12 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { useEffect, useReducer, useRef } from 'react';
 
+type InitialApiState<T> = {
+  isLoading: boolean;
+  hasError: boolean;
+  data: T | null;
+};
+
 /**
  * @description
  * This custom hook is responsible to prepare the endpoint with
@@ -15,12 +21,6 @@ export const useStructureEndpoint = <T>({
   endpoint: string;
   queryParams: { name: string; value: string }[];
 }) => {
-  type InitialApiState<T> = {
-    isLoading: boolean;
-    hasError: boolean;
-    data: T | null;
-  };
-
   const [state, updateApiState] = useReducer(
     (state: InitialApiState<T>, updatedState: Partial<InitialApiState<T>>) => {
       return { ...state, ...updatedState };
@@ -47,7 +47,7 @@ export const useStructureEndpoint = <T>({
   function sendRequest(): void {
     updateApiState({ isLoading: true });
 
-    axios<T>({
+    axios({
       method: 'GET',
       ...updatedAxiosConfig.current,
     })
