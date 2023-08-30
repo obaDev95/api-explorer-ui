@@ -5,7 +5,7 @@ import { McLoadingIndicator } from '@maersk-global/mds-react-wrapper/components-
 import { McNotification } from '@maersk-global/mds-react-wrapper/components-core/mc-notification';
 import { useState } from 'react';
 import './App.css';
-import NestedJsonViewer from './components/NestedJsonViewer';
+import JsonDataViewResult from './components/JsonDataViewResult';
 import { useQueryParams } from './hooks/useQueryParams';
 import { useResponseTime } from './hooks/useResponseTime';
 import { useStructureEndpoint } from './hooks/useStructureEndpoint';
@@ -174,7 +174,7 @@ function App() {
                 />
               </div>
 
-              <NestedJsonViewer obj={data as any} />
+              <JsonDataViewResult jsonData={data as any} />
             </>
           ) : hasError ? (
             <div>Error to handle</div>
